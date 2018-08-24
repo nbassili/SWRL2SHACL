@@ -4,118 +4,58 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:ns1="http://www.owl-ontologies.com/Ontology1514554190.owl#"
     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-    xmlns:sp="http://spinrdf.org/sp#"
+    xmlns:sh="http://www.w3.org/ns/shacl#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-    xmlns:spin="http://spinrdf.org/spin#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-  xml:base="file:///SWRL2SPIN/OUT-university1.rdf">
+  xml:base="file:///SWRL2SHACL/OUT-university1.rdf">
   <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="http://spinrdf.org/spif"/>
-    <owl:versionInfo>owl:Ontology added by TopBraid</owl:versionInfo>
+    <owl:imports rdf:resource="http://datashapes.org/dash"/>
   </owl:Ontology>
   <owl:Ontology rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl">
+    <sh:declare>
+      <sh:PrefixDeclaration>
+        <sh:prefix>ns1</sh:prefix>
+        <sh:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.owl-ontologies.com/Ontology1514554190.owl#</sh:namespace>
+      </sh:PrefixDeclaration>
+    </sh:declare>
     <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl"/>
     <owl:imports rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl"/>
-    <owl:imports rdf:resource="http://spinrdf.org/spl"/>
-    <owl:imports rdf:resource="http://spinrdf.org/spin"/>
     <owl:imports rdf:resource="http://spinrdf.org/spif"/>
-    <owl:imports rdf:resource="http://spinrdf.org/sp"/>
+    <owl:imports rdf:resource="http://datashapes.org/dash"/>
   </owl:Ontology>
   <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-  <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Student">
-    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-    <spin:rule>
-      <sp:Construct>
-        <sp:where rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:subject rdf:resource="http://spinrdf.org/spin#_this"/>
-            <sp:predicate>
-              <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#attends"/>
-            </sp:predicate>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName>y</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName>y</sp:varName>
-            </sp:subject>
-            <sp:predicate>
-              <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#isTaughtBy"/>
-            </sp:predicate>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName>z</sp:varName>
-            </sp:object>
-          </rdf:Description>
-        </sp:where>
-        <sp:text>CONSTRUCT { ?this http://www.owl-ontologies.com/Ontology1514554190.owl#knows ?z . } WHERE { ?this http://www.owl-ontologies.com/Ontology1514554190.owl#attends ?y . ?y http://www.owl-ontologies.com/Ontology1514554190.owl#isTaughtBy ?z . }</sp:text>
-        <sp:templates rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:subject rdf:resource="http://spinrdf.org/spin#_this"/>
-            <sp:predicate>
-              <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#knows"/>
-            </sp:predicate>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName>z</sp:varName>
-            </sp:object>
-          </rdf:Description>
-        </sp:templates>
-      </sp:Construct>
-    </spin:rule>
-  </owl:Class>
-  <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Course">
-    <spin:rule>
-      <sp:Construct>
-        <sp:where rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:subject rdf:resource="http://spinrdf.org/spin#_this"/>
-            <sp:predicate>
-              <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#isTaughtBy"/>
-            </sp:predicate>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName>z</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName>x</sp:varName>
-            </sp:subject>
-            <sp:predicate>
-              <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#attends"/>
-            </sp:predicate>
-            <sp:object rdf:resource="http://spinrdf.org/spin#_this"/>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName>x</sp:varName>
-            </sp:subject>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-            <sp:object rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Student"/>
-          </rdf:Description>
-        </sp:where>
-        <sp:text>CONSTRUCT { ?x http://www.owl-ontologies.com/Ontology1514554190.owl#knows ?z . } WHERE { ?this http://www.owl-ontologies.com/Ontology1514554190.owl#isTaughtBy ?z . ?x http://www.owl-ontologies.com/Ontology1514554190.owl#attends ?this . ?x a http://www.owl-ontologies.com/Ontology1514554190.owl#Student . }</sp:text>
-        <sp:templates rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName>x</sp:varName>
-            </sp:subject>
-            <sp:predicate>
-              <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#knows"/>
-            </sp:predicate>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName>z</sp:varName>
-            </sp:object>
-          </rdf:Description>
-        </sp:templates>
-      </sp:Construct>
-    </spin:rule>
-  </owl:Class>
   <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Professor">
     <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
   </owl:Class>
   <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#attends">
-    <rdfs:range rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Course"/>
-    <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Student"/>
+    <rdfs:range>
+      <sh:NodeShape rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Course">
+        <sh:rule>
+          <sh:SPARQLRule>
+            <sh:targetClass rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Course"/>
+            <sh:prefixes rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl"/>
+            <sh:construct rdf:datatype="http://www.w3.org/2000/01/rdf-schema#Literal"
+            >CONSTRUCT { ?x ns1:knows ?z . } WHERE { ?x a ns1:Student . ?x ns1:attends $this . $this ns1:isTaughtBy ?z . }</sh:construct>
+          </sh:SPARQLRule>
+        </sh:rule>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </sh:NodeShape>
+    </rdfs:range>
+    <rdfs:domain>
+      <sh:NodeShape rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Student">
+        <sh:rule>
+          <sh:SPARQLRule>
+            <sh:targetClass rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Student"/>
+            <sh:prefixes rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl"/>
+            <sh:construct rdf:datatype="http://www.w3.org/2000/01/rdf-schema#Literal"
+            >CONSTRUCT { $this ns1:knows ?z . } WHERE { $this ns1:attends ?y . ?y ns1:isTaughtBy ?z . }</sh:construct>
+          </sh:SPARQLRule>
+        </sh:rule>
+        <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </sh:NodeShape>
+    </rdfs:domain>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#isTaughtBy">
     <rdfs:range rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Professor"/>

@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#"
+    xmlns:sh="http://www.w3.org/ns/shacl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:ns1="http://www.owl-ontologies.com/Ontology1535105393.owl#"
+  xml:base="file:///SWRL2SPIN/OUT-test-integer-division.rdf">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://datashapes.org/dash"/>
+  </owl:Ontology>
+  <owl:Ontology rdf:about="http://www.owl-ontologies.com/Ontology1535105393.owl">
+    <sh:declare>
+      <sh:PrefixDeclaration>
+        <sh:prefix>ns1</sh:prefix>
+        <sh:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.owl-ontologies.com/Ontology1535105393.owl#</sh:namespace>
+      </sh:PrefixDeclaration>
+    </sh:declare>
+    <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl"/>
+    <owl:imports rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl"/>
+    <owl:imports rdf:resource="http://spinrdf.org/spif"/>
+    <owl:imports rdf:resource="http://datashapes.org/dash"/>
+  </owl:Ontology>
+  <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1535105393.owl#prop4">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain>
+      <sh:NodeShape rdf:about="http://www.owl-ontologies.com/Ontology1535105393.owl#ClassA">
+        <sh:rule>
+          <sh:SPARQLRule>
+            <sh:targetClass rdf:resource="http://www.owl-ontologies.com/Ontology1535105393.owl#ClassA"/>
+            <sh:prefixes rdf:resource="http://www.owl-ontologies.com/Ontology1535105393.owl"/>
+            <sh:construct rdf:datatype="http://www.w3.org/2000/01/rdf-schema#Literal"
+            >CONSTRUCT { $this ns1:prop3 ?a . } WHERE { $this ns1:prop1 ?y . $this ns1:prop2 ?z . BIND ( spif:cast( ( ?y / ?z ) , xsd:integer ) AS ?a ) }</sh:construct>
+          </sh:SPARQLRule>
+        </sh:rule>
+        <sh:rule>
+          <sh:SPARQLRule>
+            <sh:targetClass rdf:resource="http://www.owl-ontologies.com/Ontology1535105393.owl#ClassA"/>
+            <sh:prefixes rdf:resource="http://www.owl-ontologies.com/Ontology1535105393.owl"/>
+            <sh:construct rdf:datatype="http://www.w3.org/2000/01/rdf-schema#Literal"
+            >CONSTRUCT { $this ns1:prop4 ?a . } WHERE { $this ns1:prop1 ?y . $this ns1:prop2 ?z . BIND ( ( ?y - ( spif:cast( ( ?y / ?z ) , xsd:integer ) * ?z ) ) AS ?a ) }</sh:construct>
+          </sh:SPARQLRule>
+        </sh:rule>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </sh:NodeShape>
+    </rdfs:domain>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1535105393.owl#prop1">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1535105393.owl#ClassA"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1535105393.owl#prop3">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1535105393.owl#ClassA"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1535105393.owl#prop2">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1535105393.owl#ClassA"/>
+  </owl:DatatypeProperty>
+  <owl:AnnotationProperty rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleGroupEnabled">
+    <rdfs:domain rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#Entity"/>
+  </owl:AnnotationProperty>
+  <rdf:Description>
+    <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swrla:isRuleEnabled>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#hasRuleGroup">
+    <rdfs:range rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#Entity"/>
+  </rdf:Description>
+  <rdf:Description>
+    <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</swrla:isRuleEnabled>
+  </rdf:Description>
+  <owl:NamedIndividual rdf:about="http://www.owl-ontologies.com/Ontology1535105393.owl#inst_1">
+    <ns1:prop2 rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >3</ns1:prop2>
+    <ns1:prop1 rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >10</ns1:prop1>
+    <rdf:type rdf:resource="http://www.owl-ontologies.com/Ontology1535105393.owl#ClassA"/>
+  </owl:NamedIndividual>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

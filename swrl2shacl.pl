@@ -1,6 +1,6 @@
-﻿/************************************************************************
+/************************************************************************
  SWRL2SHACL
- A tool for translating SWRL rules into SPIN rules
+ A tool for translating SWRL rules into SHACL SPARQLrules
 
  by Dr. Nick Bassiliades, Associate Professor
  Department of Informatics, Aristotle University of Thessaloniki, Greece
@@ -14,12 +14,12 @@
 %:- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdf11)).
 :- rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#').
-:- rdf_register_prefix(spin, 'http://spinrdf.org/spin#').
-:- rdf_register_prefix(sp, 'http://spinrdf.org/sp#').
+:- rdf_register_prefix(sh, 'http://www.w3.org/ns/shacl#').
 :- rdf_register_prefix(spif, 'http://spinrdf.org/spif#').
 :- rdf_register_prefix(xsd, 'http://www.w3.org/2001/XMLSchema#').
-:- rdf_register_prefix(arg, 'http://spinrdf.org/arg#').
+%:- rdf_register_prefix(arg, 'http://spinrdf.org/arg#').
 :- dynamic option/2.
+
 
 %:- load_rdf('univ-with-SWRL.owl', Triples), writelist(Triples), nl.
 
@@ -43,20 +43,32 @@ swrl2shacl(OntoFile,N,Options) :-
 	assert_options(Options),
 	rdf_reset_db,
 	rdf_load(OntoFile,[register_namespaces(true)]),
+	rdf(OntoURI,rdf:type,owl:'Ontology'),
+	rdf_assert(OntoURI,owl:imports,'http://datashapes.org/dash'),
+	rdf_assert(OntoURI,owl:imports,'http://spinrdf.org/spif'),  % check
+	rdf_create_bnode(Declaration),
+	rdf_assert(OntoURI,sh:declare,Declaration),
+	rdf_assert(Declaration,rdf:type,sh:'PrefixDeclaration'),
+	atom_concat(OntoURI,'#',OntoNS),
+	( rdf_current_prefix(OntoPrefix,OntoNS) ->
+		rdf_assert(Declaration,sh:prefix,literal(OntoPrefix));
+		(rdf_register_prefix(ns1, OntoNS),
+		 rdf_assert(Declaration,sh:prefix,literal(ns1)))),  % This is a hack
+	rdf_assert(Declaration,sh:namespace,literal(type('http://www.w3.org/2001/XMLSchema#anyURI',OntoNS))),
 	findall(R, rdf(R,rdf:type,swrl:'Imp'), Rules),
 	multiply_rules(Rules,N,RulesN),
 	% Uncomment the line below (and comment the one right after) to measure total rule translation time
-	%time(translate_rules(RulesN,_SPINRules,_TrRules)),
-	translate_rules(RulesN,_SPINRules,_TrRules),
+	%time(translate_rules(RulesN,_SPARQLRules,_TrRules)),
+	translate_rules(RulesN,_SPARQLRules,_TrRules),
 	delete_swrl_rules(RulesN),
-	%writelist(SPINRules), nl,
+	%writelist(SPARQLRules), nl,
 	%writelist(TrRules),
-	rdf(OntoURI,rdf:type,owl:'Ontology'),
-	rdf_assert(OntoURI,owl:imports,'http://spinrdf.org/spif'),
-	rdf_assert(OntoURI,owl:imports,'http://spinrdf.org/spin'),
-	rdf_assert(OntoURI,owl:imports,'http://spinrdf.org/sp'),
-	rdf_assert(OntoURI,owl:imports,'http://spinrdf.org/spl'),
+%	rdf_assert(OntoURI,owl:imports,'http://spinrdf.org/spin'),
+%	rdf_assert(OntoURI,owl:imports,'http://spinrdf.org/sp'),
+%	rdf_assert(OntoURI,owl:imports,'http://spinrdf.org/spl'),
 	atom_concat('OUT-',OntoFile,OutOntoFile),
+%	rdf_save(OutOntoFile,[base_uri(OntoURI)]),
+%	rdf_save(OutOntoFile,[xml_attributes(false)]),
 	rdf_save(OutOntoFile,[]),
 	retract_options.
 swrl2shacl(_,_,_) :-
@@ -89,17 +101,17 @@ multiply_rules_aux([Rule|RestRules],N,[NewRule|RestNewRules]) :-
 	multiply_rules_aux(RestRules,N,RestNewRules).
 
 translate_rules([],[],[]).
-translate_rules([Rule|RestRules],AllSPINRules,AllTrRules) :-
-	translate_one_rule(Rule,SPINRules,TrRuleStrs),
-	append(SPINRules,RestSPINRules,AllSPINRules),
+translate_rules([Rule|RestRules],AllSPARQLRules,AllTrRules) :-
+	translate_one_rule(Rule,SPARQLRules,TrRuleStrs),
+	append(SPARQLRules,RestSPARQLRules,AllSPARQLRules),
 	append(TrRuleStrs,RestTrRules,AllTrRules),
-	translate_rules(RestRules,RestSPINRules,RestTrRules).
+	translate_rules(RestRules,RestSPARQLRules,RestTrRules).
 
-translate_one_rule(Rule,SPINRules,TrRuleStrs) :-
+translate_one_rule(Rule,SPARQLRules,TrRuleStrs) :-
 	rdf(Rule,swrl:head,Head),
 	rdf(Rule,swrl:body,Body),
 	discover_this(Body,ListOfThis),
-	translate_one_rule_many_this(ListOfThis,[],Head,Body,SPINRules,TrRuleStrs), !.
+	translate_one_rule_many_this(ListOfThis,[],Head,Body,SPARQLRules,TrRuleStrs), !.
 translate_one_rule(Rule,[],[]) :-
 	write('The translation of SWRL rule '),
 	rdf(Rule,rdfs:label,RL),
@@ -122,27 +134,33 @@ check_atom_type(Atom) :-
 	rdf(Atom,rdf:type,swrl:'IndividualPropertyAtom').
 
 translate_one_rule_many_this([],_ClassThis,_Head,_Body,[],[]).
-translate_one_rule_many_this([This|RestThis],ListOfThisClasses,Head,Body,[SPINRule|RestSPINRules],[TrRuleStr|RestTrRuleStrs]):-
+translate_one_rule_many_this([This|RestThis],ListOfThisClasses,Head,Body,[SPARQLRule|RestSPARQLRules],[TrRuleStr|RestTrRuleStrs]):-
 	discover_this_class(Body,This,ThisClass),
 	\+ member(ThisClass,ListOfThisClasses), !,
-	translate_one_rule_one_this(This,ThisClass,Head,Body,SPINRule,TrRuleStr),
-	translate_one_rule_many_this(RestThis,[ThisClass|ListOfThisClasses],Head,Body,RestSPINRules,RestTrRuleStrs).
-translate_one_rule_many_this([_This|RestThis],ListOfThisClasses,Head,Body,RestSPINRules,RestTrRuleStrs):-
-	translate_one_rule_many_this(RestThis,ListOfThisClasses,Head,Body,RestSPINRules,RestTrRuleStrs).
+	translate_one_rule_one_this(This,ThisClass,Head,Body,SPARQLRule,TrRuleStr),
+	translate_one_rule_many_this(RestThis,[ThisClass|ListOfThisClasses],Head,Body,RestSPARQLRules,RestTrRuleStrs).
+translate_one_rule_many_this([_This|RestThis],ListOfThisClasses,Head,Body,RestSPARQLRules,RestTrRuleStrs):-
+	translate_one_rule_many_this(RestThis,ListOfThisClasses,Head,Body,RestSPARQLRules,RestTrRuleStrs).
 
-translate_one_rule_one_this(This,ThisClass,Head,Body,SPINRule,TrRuleStr) :-
-	translate_head(Head,SPINHead,TrHead,This),
-	translate_body(Body,SPINBody,TrBody,This),
+translate_one_rule_one_this(This,ThisClass,Head,Body,SPARQLRule,TrRuleStr) :-
+	translate_head(Head,_SPINHead,TrHead,This), % to check
+	translate_body(Body,_SPINBody,TrBody,This), % to check
 	append(TrHead,TrBody,TrRule),
-	rdf_create_bnode(SPINRule),
-	rdf_assert(ThisClass,spin:rule,SPINRule),
-	rdf_assert(SPINRule,rdf:type,sp:'Construct'),
-	rdf_assert(SPINRule,sp:where,SPINBody),
-	rdf_assert(SPINRule,sp:templates,SPINHead),
+	rdf_create_bnode(SPARQLRule),
+	rdf_assert(ThisClass,sh:rule,SPARQLRule),
+	rdf_assert(ThisClass,rdf:type,sh:'NodeShape'),
+	rdf_assert(SPARQLRule,rdf:type,sh:'SPARQLRule'),
+	rdf(OntoURI,rdf:type,owl:'Ontology'),
+	rdf_assert(SPARQLRule,sh:prefixes,OntoURI),
+	rdf_assert(SPARQLRule,sh:targetClass,ThisClass),
+%	rdf_assert(SPARQLRule,sp:where,SPINBody),
+%	rdf_assert(SPARQLRule,sp:templates,SPINHead),
 	flatten(TrRule,TrRule1),
 	atomic_list_concat(TrRule1, ' ', TrRuleAtom),
+	%atomic_list_concat(TrRule1, ' ', TrRuleAtom),
 	atom_string(TrRuleAtom,TrRuleStr),
-	rdf_assert(SPINRule,sp:text,TrRuleStr).
+	%string_concat("""""",TrRuleStrIn,TrRuleStr1),string_concat(TrRuleStr1,"""""",TrRuleStr),
+	rdf_assert(SPARQLRule,sh:construct,literal(type('http://www.w3.org/2000/01/rdf-schema#Literal',TrRuleAtom))).  % PROBLEM: TrRuleAtom is translated as rdf:resource
 
 translate_head(Head,SPINHead,TransHead,This) :-
 	translate_atom_list(head,Head,This,SPINHead,TrAL),
@@ -180,7 +198,7 @@ discover_var_class2(Atom,ThisClass) :-
 	rdf(Atom,swrl:propertyPredicate,Property),
 	rdf(Property,rdfs:range,ThisClass).
 
-translate_atom_list(Mode,AtomList,This,SPINAtomList,TrAtomList) :-
+translate_atom_list(Mode,AtomList,This,_SPINAtomList,TrAtomList) :-
 	rdf_list(AtomList, PrologAtomList),
 	translate_atom_list_aux(Mode,PrologAtomList,This,SPINPrologAtomList1,TrAtomList1),
 	/*
@@ -190,14 +208,14 @@ translate_atom_list(Mode,AtomList,This,SPINAtomList,TrAtomList) :-
 		write('SPINPrologAtomList: '), writeln(SPINPrologAtomList1),
 		write('TrAtomList: '), writeln(TrAtomList1));
 		true),*/
-	re_order_atom_list_all(Mode,SPINPrologAtomList1,TrAtomList1,SPINPrologAtomList,TrAtomList),
+	re_order_atom_list_all(Mode,SPINPrologAtomList1,TrAtomList1,_SPINPrologAtomList,TrAtomList).
 	/*(Mode == body ->
 		(writeln('-------AFTER----------------'),
 		write('SPINPrologAtomList: '), writeln(SPINPrologAtomList),
 		write('TrAtomList: '), writeln(TrAtomList));
 		true),*/
 	%flatten(SPINPrologAtomList,SPINPrologAtomList1),
-	rdf_assert_list(SPINPrologAtomList, SPINAtomList).
+	% removed for SHACL: rdf_assert_list(SPINPrologAtomList, SPINAtomList).
 
 translate_atom_list_aux(_,[],_,[],[]).
 translate_atom_list_aux(Mode,[Atom|RestAtoms],This,AllSPINAtoms,TrAllAtoms) :-
@@ -221,17 +239,17 @@ re_order_atom_list_all(_Mode,SPINPrologAtomList,TrAtomList,SPINPrologAtomList,Tr
 re_order_atom_list(body,SPINPrologAtomListIn,TrAtomListIn,SPINPrologAtomList,TrAtomList) :-
 	nth1(Pos1,TrAtomListIn,[Arg11,_Pred1,Arg21,'.']),
 	%(is_var(Arg11); is_var(Arg21)), Arg11\=='?this', Arg21\=='?this',
-	is_var(Arg11), Arg11 \== '?this', Arg21 \== '?this',
+	is_var(Arg11), Arg11 \== '$this', Arg21 \== '$this',
 	nth1(Pos2,TrAtomListIn,[Arg12,_Pred2,Arg22,'.']), Pos2 > Pos1,
-	((Arg12 == Arg11, Arg22=='?this');(Arg12 == '?this', Arg22 == Arg11)), !,
+	((Arg12 == Arg11, Arg22=='$this');(Arg12 == '$this', Arg22 == Arg11)), !,
 	swap(Pos1,Pos2,TrAtomListIn,TrAtomList),
 	swap(Pos1,Pos2,SPINPrologAtomListIn,SPINPrologAtomList).
 re_order_atom_list(body,SPINPrologAtomListIn,TrAtomListIn,SPINPrologAtomList,TrAtomList) :-
 	nth1(Pos1,TrAtomListIn,[Arg11,_Pred1,Arg21,'.']),
 	%(is_var(Arg11); is_var(Arg21)), Arg11\=='?this', Arg21\=='?this',
-	is_var(Arg21), Arg21 \== '?this', Arg11\=='?this',
+	is_var(Arg21), Arg21 \== '$this', Arg11\=='$this',
 	nth1(Pos2,TrAtomListIn,[Arg12,_Pred2,Arg22,'.']), Pos2 > Pos1,
-	((Arg12 == Arg21, Arg22=='?this');(Arg12 == '?this', Arg22 == Arg21)), !,
+	((Arg12 == Arg21, Arg22=='$this');(Arg12 == '$this', Arg22 == Arg21)), !,
 	swap(Pos1,Pos2,TrAtomListIn,TrAtomList),
 	swap(Pos1,Pos2,SPINPrologAtomListIn,SPINPrologAtomList).
 /* TODO here*/
@@ -257,7 +275,7 @@ re_order_atom_list(body,SPINPrologAtomListIn,TrAtomListIn,SPINPrologAtomList,TrA
 re_order_atom_list(_Mode,SPINPrologAtomList,TrAtomList,SPINPrologAtomList,TrAtomList).
 
 rank_triples(Triples,RankedTriples,UnRankedTriples) :-
-	findall(0-[Arg1,Pred,Arg2,'.'],((Arg1='?this';Arg2='?this'),member([Arg1,Pred,Arg2,'.'],Triples)),ThisTriples),
+	findall(0-[Arg1,Pred,Arg2,'.'],((Arg1='$this';Arg2='$this'),member([Arg1,Pred,Arg2,'.'],Triples)),ThisTriples),
 	my_subtract(Triples, ThisTriples, RestTriples),
 	rank_triples_aux(1,ThisTriples,RestTriples,RankedTriples,UnRankedTriples).
 
@@ -324,85 +342,96 @@ BuiltinAtom
 	swrl#arguments
 */
 
+
 translate_atom(body,Atom,This,[],[]) :-
 	rdf(Atom,rdf:type,swrl:'ClassAtom'),
 	rdf(Atom,swrl:argument1,This), !.
-translate_atom(Mode,Atom,This,SPINAtom,[TrArg,a,Class,'.']) :-
+translate_atom(Mode,Atom,This,_SPINAtom,[TrArg,a,Class1,'.']) :-
 	rdf(Atom,rdf:type,swrl:'ClassAtom'),
 	(Mode = head ; (Mode = body, not(option(subclass,true)))),	!,
 	rdf(Atom,swrl:classPredicate,Class),
+	shorten_uri(Class,Class1),
 	rdf(Atom,swrl:argument1,Arg),
-	translate_argument(Arg,This,SPINArg,TrArg),
-	rdf_create_bnode(SPINAtom),
-	rdf_assert(SPINAtom,sp:subject,SPINArg),
-	rdf_assert(SPINAtom,sp:predicate,rdf:type),
-	rdf_assert(SPINAtom,sp:object,Class).
+	translate_argument(Arg,This,_SPINArg,TrArg).
+	% removed for SHACL:
+	%rdf_create_bnode(SPINAtom),
+	%rdf_assert(SPINAtom,sp:subject,SPINArg),
+	%rdf_assert(SPINAtom,sp:predicate,rdf:type),
+	%rdf_assert(SPINAtom,sp:object,Class).
 % Optionally translate classAtom to rdf:type/(rdfs:subClassOf)* in order to avoid using reasoner
 % Use subclass(true) in the options
-translate_atom(body,Atom,This,SPINAtom,[TrArg,'rdf:type/(rdfs:subClassOf)*',Class,'.']) :-
-		rdf(Atom,rdf:type,swrl:'ClassAtom'), !,
-		rdf(Atom,swrl:classPredicate,Class),
-		rdf(Atom,swrl:argument1,Arg),
-		translate_argument(Arg,This,SPINArg,TrArg),
-		rdf_create_bnode(SPINAtom),
-		rdf_global_id(sp:'TriplePath',ExprURI1),
-		rdf_assert(SPINAtom,rdf:type,ExprURI1),
-		rdf_assert(SPINAtom,sp:subject,SPINArg),
-		rdf_assert(SPINAtom,sp:object,Class),
-		rdf_create_bnode(PathExpr),
-		rdf_assert(SPINAtom,sp:path,PathExpr),
-		rdf_global_id(sp:'SeqPath',ExprURI2),
-		rdf_assert(PathExpr,rdf:type,ExprURI2),
-		rdf_assert(PathExpr,sp:path1,rdf:type),
-		rdf_create_bnode(PathExpr1),
-		rdf_assert(PathExpr,sp:path2,PathExpr1),
-		rdf_global_id(sp:'ModPath',ExprURI3),
-		rdf_assert(PathExpr1,rdf:type,ExprURI3),
-		rdf_assert(PathExpr1,sp:modMax,-2),
-		rdf_assert(PathExpr1,sp:modMin,0),
-		rdf_assert(PathExpr1,sp:subPath,rdfs:subClassOf).
-translate_atom(_Mode,Atom,This,SPINAtom,[TrArg1,Property,TrArg2,'.']) :-
+translate_atom(body,Atom,This,_SPINAtom,[TrArg,'rdf:type/(rdfs:subClassOf)*',Class1,'.']) :-
+	rdf(Atom,rdf:type,swrl:'ClassAtom'), !,
+	rdf(Atom,swrl:classPredicate,Class),
+	shorten_uri(Class,Class1),
+	rdf(Atom,swrl:argument1,Arg),
+	translate_argument(Arg,This,_SPINArg,TrArg).
+	% removed for SHACL:
+	% rdf_create_bnode(SPINAtom),
+	%	rdf_global_id(sp:'TriplePath',ExprURI1),
+	%	rdf_assert(SPINAtom,rdf:type,ExprURI1),
+	%	rdf_assert(SPINAtom,sp:subject,SPINArg),
+	%	rdf_assert(SPINAtom,sp:object,Class),
+	%	rdf_create_bnode(PathExpr),
+	%	rdf_assert(SPINAtom,sp:path,PathExpr),
+	%	rdf_global_id(sp:'SeqPath',ExprURI2),
+	%	rdf_assert(PathExpr,rdf:type,ExprURI2),
+	%	rdf_assert(PathExpr,sp:path1,rdf:type),
+	%	rdf_create_bnode(PathExpr1),
+	%	rdf_assert(PathExpr,sp:path2,PathExpr1),
+	%	rdf_global_id(sp:'ModPath',ExprURI3),
+	%	rdf_assert(PathExpr1,rdf:type,ExprURI3),
+	%	rdf_assert(PathExpr1,sp:modMax,-2),
+	%	rdf_assert(PathExpr1,sp:modMin,0),
+	%	rdf_assert(PathExpr1,sp:subPath,rdfs:subClassOf).
+translate_atom(_Mode,Atom,This,_SPINAtom,[TrArg1,Property1,TrArg2,'.']) :-
 	rdf(Atom,rdf:type,swrl:'IndividualPropertyAtom'), !,
 	rdf(Atom,swrl:propertyPredicate,Property),
+	shorten_uri(Property,Property1),
 	rdf(Atom,swrl:argument1,Arg1),
 	rdf(Atom,swrl:argument2,Arg2),
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	translate_argument(Arg2,This,SPINArg2,TrArg2),
-	rdf_create_bnode(SPINAtom),
-	rdf_assert(SPINAtom,sp:subject,SPINArg1),
-	rdf_assert(SPINAtom,sp:predicate,Property),
-	rdf_assert(SPINAtom,sp:object,SPINArg2).
-translate_atom(_Mode,Atom,This,SPINAtom,[TrArg1,'owl:sameAs',TrArg2,'.']) :-
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	translate_argument(Arg2,This,_SPINArg2,TrArg2).
+	% removed for SHACL:
+	%rdf_create_bnode(SPINAtom),
+	%rdf_assert(SPINAtom,sp:subject,SPINArg1),
+	%rdf_assert(SPINAtom,sp:predicate,Property),
+	%rdf_assert(SPINAtom,sp:object,SPINArg2).
+translate_atom(_Mode,Atom,This,_SPINAtom,[TrArg1,'owl:sameAs',TrArg2,'.']) :-
 	rdf(Atom,rdf:type,swrl:'SameIndividualAtom'), !,
 	rdf(Atom,swrl:argument1,Arg1),
 	rdf(Atom,swrl:argument2,Arg2),
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	translate_argument(Arg2,This,SPINArg2,TrArg2),
-	rdf_create_bnode(SPINAtom),
-	rdf_assert(SPINAtom,sp:subject,SPINArg1),
-	rdf_assert(SPINAtom,sp:predicate,owl:sameAs),
-	rdf_assert(SPINAtom,sp:object,SPINArg2).
-translate_atom(_Mode,Atom,This,SPINAtom,[TrArg1,'owl:differentFrom',TrArg2,'.']) :-
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	translate_argument(Arg2,This,_SPINArg2,TrArg2).
+	% removed for SHACL:
+	%rdf_create_bnode(SPINAtom),
+	%rdf_assert(SPINAtom,sp:subject,SPINArg1),
+	%rdf_assert(SPINAtom,sp:predicate,owl:sameAs),
+	%rdf_assert(SPINAtom,sp:object,SPINArg2).
+translate_atom(_Mode,Atom,This,_SPINAtom,[TrArg1,'owl:differentFrom',TrArg2,'.']) :-
 	rdf(Atom,rdf:type,swrl:'DifferentIndividualsAtom'), !,
 	rdf(Atom,swrl:argument1,Arg1),
 	rdf(Atom,swrl:argument2,Arg2),
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	translate_argument(Arg2,This,SPINArg2,TrArg2),
-	rdf_create_bnode(SPINAtom),
-	rdf_assert(SPINAtom,sp:subject,SPINArg1),
-	rdf_assert(SPINAtom,sp:predicate,owl:differentFrom),
-	rdf_assert(SPINAtom,sp:object,SPINArg2).
-translate_atom(_Mode,Atom,This,SPINAtom,[TrArg1,Property,TrArg2,'.']) :-
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	translate_argument(Arg2,This,_SPINArg2,TrArg2).
+	% removed for SHACL:
+	%rdf_create_bnode(SPINAtom),
+	%rdf_assert(SPINAtom,sp:subject,SPINArg1),
+	%rdf_assert(SPINAtom,sp:predicate,owl:differentFrom),
+	%rdf_assert(SPINAtom,sp:object,SPINArg2).
+translate_atom(_Mode,Atom,This,_SPINAtom,[TrArg1,Property1,TrArg2,'.']) :-
 	rdf(Atom,rdf:type,swrl:'DatavaluedPropertyAtom'), !,
 	rdf(Atom,swrl:propertyPredicate,Property),
+	shorten_uri(Property,Property1),
 	rdf(Atom,swrl:argument1,Arg1),
 	rdf(Atom,swrl:argument2,Arg2),
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	translate_argument(Arg2,This,SPINArg2,TrArg2),
-	rdf_create_bnode(SPINAtom),
-	rdf_assert(SPINAtom,sp:subject,SPINArg1),
-	rdf_assert(SPINAtom,sp:predicate,Property),
-	rdf_assert(SPINAtom,sp:object,SPINArg2).
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	translate_argument(Arg2,This,_SPINArg2,TrArg2).
+	% removed for SHACL:
+	%rdf_create_bnode(SPINAtom),
+	%rdf_assert(SPINAtom,sp:subject,SPINArg1),
+	%rdf_assert(SPINAtom,sp:predicate,Property),
+	%rdf_assert(SPINAtom,sp:object,SPINArg2).
 translate_atom(_Mode,Atom,This,SPINAtom,TrBuiltIn) :-
 	rdf(Atom,rdf:type,swrl:'BuiltinAtom'), !,
 	rdf(Atom,swrl:builtin,SWRLB),
@@ -426,12 +455,12 @@ translate_built_in(SWRL_builtin,This,[Arg1,Arg2],SPINAtom,[TrExpr] ) :-
 	unary_assign_builtin(SWRL_builtin,SPIN_builtin,SPARQL_operator), !,
 	tr_unary_assign_math_expression(SPIN_builtin,SPARQL_operator,This,Arg1,Arg2,SPINAtom,TrExpr).
 translate_built_in(SWRL_builtin,This,[Arg1|Args],SPINAtom,[TrExpr] ) :-
-	assign_function_builtin(SWRL_builtin,SPIN_builtin), !,
-	tr_function_expression(SPIN_builtin,This,Args,SPINExpr1,TrArgs1),
+	assign_function_builtin(SWRL_builtin,SPIN_builtin,SPARQL_builtin), !,
+	tr_function_expression(SPIN_builtin,SPARQL_builtin,This,Args,SPINExpr1,TrArgs1),
 	tr_bind_expression(Arg1,This,SPINExpr1,TrArgs1,SPINAtom,TrExpr).
 translate_built_in(SWRL_builtin,This,Args,SPINAtom,[TrExpr] ) :-
-	filter_function_builtin(SWRL_builtin,SPIN_builtin), !,
-	tr_function_expression(SPIN_builtin,This,Args,SPINExpr,TrArgs),
+	filter_function_builtin(SWRL_builtin,SPIN_builtin,SPARQL_builtin), !,
+	tr_function_expression(SPIN_builtin,SPARQL_builtin,This,Args,SPINExpr,TrArgs),
 	tr_filter_expression(SPINExpr,TrArgs,SPINAtom,TrExpr).
 translate_built_in(SWRL_builtin,This,[Arg1|Args],SPINAtom,[TrExpr] ) :-
 	complex_assign_builtin(SWRL_builtin), !,
@@ -469,23 +498,23 @@ unary_assign_builtin(ceiling,sp:ceil,ceil).
 unary_assign_builtin(floor,sp:floor,floor).
 unary_assign_builtin(round,sp:round,round).
 
-assign_function_builtin(mod,spif:mod).
-assign_function_builtin(stringConcat,sp:concat).
-assign_function_builtin(stringLength,sp:strlen).
-assign_function_builtin(upperCase,sp:ucase).
-assign_function_builtin(lowerCase,sp:lcase).
-assign_function_builtin(substringBefore,sp:strbefore).
-assign_function_builtin(substringAfter,sp:strafter).
-assign_function_builtin(substring,sp:substr).
-assign_function_builtin(replace,sp:replace).
+%assign_function_builtin(mod,spif:mod,spif:mod).  % does not work for SHACL?
+assign_function_builtin(stringConcat,sp:concat,concat).
+assign_function_builtin(stringLength,sp:strlen,strlen).
+assign_function_builtin(upperCase,sp:ucase,ucase).
+assign_function_builtin(lowerCase,sp:lcase,lcase).
+assign_function_builtin(substringBefore,sp:strbefore,strbefore).
+assign_function_builtin(substringAfter,sp:strafter,strafter).
+assign_function_builtin(substring,sp:substr,substr).
+assign_function_builtin(replace,sp:replace,replace).
 
-filter_function_builtin(endsWith,sp:strends).
-filter_function_builtin(startsWith,sp:strstarts).
-filter_function_builtin(contains,sp:contains).
-filter_function_builtin(matches,sp:regex).
+filter_function_builtin(endsWith,sp:strends,strends).
+filter_function_builtin(startsWith,sp:strstarts,strstarts).
+filter_function_builtin(contains,sp:contains,contains).
+filter_function_builtin(matches,sp:regex,regex).
 
 complex_assign_builtin(integerDivide).
-% complex_assign_builtin(mod).   % There is a direct translation to spif:mod
+complex_assign_builtin(mod). % is translated to spif:mod directly
 complex_assign_builtin(pow).
 complex_assign_builtin(normalizeSpace).
 complex_assign_builtin(date).
@@ -508,31 +537,30 @@ magic_property_builtin(tokenize,spif:split).
 tr_complex_expression(integerDivide,This,[Arg1,Arg2],SPINExpr1,TrArgs1) :- !,
 	tr_binary_Math_expression(sp:divide,'/',This,[Arg1,Arg2],SPINExpr,TrArgs),
 	tr_cast_expression(SPINExpr,TrArgs,xsd:integer,SPINExpr1,TrArgs1).
-/* There is a direct translation to spif:mod
 tr_complex_expression(mod,This,[Arg1,Arg2],SPINExpr3,TrArgs3) :- !,
 	tr_complex_expression(integerDivide,This,[Arg1,Arg2],SPINExpr1,TrArgs1),
-	binary_assign_builtin(multiply,SPIN_mul,OpMul),
+	associative_infix_assign_builtin(multiply,SPIN_mul,OpMul),
 	tr_binary_Math_expression(SPIN_mul,OpMul,This,[SPINExpr1-TrArgs1,Arg2],SPINExpr2,TrArgs2),
-	binary_assign_builtin(subtract,SPIN_sub,OpSub),
+	binary_infix_assign_builtin(subtract,SPIN_sub,OpSub),
 	tr_binary_Math_expression(SPIN_sub,OpSub,This,[Arg1,SPINExpr2-TrArgs2],SPINExpr3,TrArgs3).
-*/
 tr_complex_expression(pow,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
-	Arg2=Arg2Value^^'http://www.w3.org/2001/XMLSchema#int',
+	(Arg2=Arg2Value^^'http://www.w3.org/2001/XMLSchema#int';
+	 Arg2=Arg2Value^^'http://www.w3.org/2001/XMLSchema#integer'),
 	tr_multi_binary_Math_expression(sp:mul,'*',This,Arg1,Arg2Value,SPINExpr,TrArgs).
 tr_complex_expression(containsIgnoreCase,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
-	tr_function_expression(sp:lcase,This,[Arg1],SPINExpr1,TrArgs1),
-	tr_function_expression(sp:lcase,This,[Arg2],SPINExpr2,TrArgs2),
-	tr_function_expression(sp:contains,This,[SPINExpr1-TrArgs1,SPINExpr2-TrArgs2],SPINExpr,TrArgs).
+	tr_function_expression(sp:lcase,lcase,This,[Arg1],SPINExpr1,TrArgs1),
+	tr_function_expression(sp:lcase,lcase,This,[Arg2],SPINExpr2,TrArgs2),
+	tr_function_expression(sp:contains,contains,This,[SPINExpr1-TrArgs1,SPINExpr2-TrArgs2],SPINExpr,TrArgs).
 tr_complex_expression(stringEqualIgnoreCase,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
-	tr_function_expression(sp:lcase,This,[Arg1],SPINExpr1,TrArgs1),
-	tr_function_expression(sp:lcase,This,[Arg2],SPINExpr2,TrArgs2),
+	tr_function_expression(sp:lcase,lcase,This,[Arg1],SPINExpr1,TrArgs1),
+	tr_function_expression(sp:lcase,lcase,This,[Arg2],SPINExpr2,TrArgs2),
 	tr_binary_Math_expression(sp:eq,'=',This,[SPINExpr1-TrArgs1,SPINExpr2-TrArgs2],SPINExpr,TrArgs).
 tr_complex_expression(normalizeSpace,This,[Arg2],SPINExpr,TrArgs) :- !,
 %%%   (REPLACE(REPLACE(REPLACE(?y, "\\s+", " "), "^\\s+", ""), "\\s+$", "")
 	rdf_global_id(xsd:string,StringURI),
-	tr_function_expression(sp:replace,This,[Arg2,'\\s+'^^StringURI, ' '^^StringURI],SPINExpr1,TrArgs1),
-	tr_function_expression(sp:replace,This,[SPINExpr1-TrArgs1,'^\\s+'^^StringURI, ''^^StringURI],SPINExpr2,TrArgs2),
-	tr_function_expression(sp:replace,This,[SPINExpr2-TrArgs2,'\\s+$'^^StringURI, ''^^StringURI],SPINExpr,TrArgs).
+	tr_function_expression(sp:replace,replace,This,[Arg2,'\"\\s+\"'^^StringURI, '\" \"'^^StringURI],SPINExpr1,TrArgs1),
+	tr_function_expression(sp:replace,replace,This,[SPINExpr1-TrArgs1,'\"^\\s+\"'^^StringURI, '\"\"'^^StringURI],SPINExpr2,TrArgs2),
+	tr_function_expression(sp:replace,replace,This,[SPINExpr2-TrArgs2,'\"\\s+$\"'^^StringURI, '\"\"'^^StringURI],SPINExpr,TrArgs).
 tr_complex_expression(date,This,[YearArg,MonthArg,DayArg],SPINExpr,TrArgs) :- !,
 	translate_argument(YearArg,This,SPINYearArg,YearTrArg),
 	translate_argument(MonthArg,This,SPINMonthArg,MonthTrArg),
@@ -541,13 +569,14 @@ tr_complex_expression(date,This,[YearArg,MonthArg,DayArg],SPINExpr,TrArgs) :- !,
 	tr_cast_expression(SPINMonthArg,MonthTrArg,xsd:string,SPINMonthArg1,MonthTrArg1),
 	tr_cast_expression(SPINDayArg,DayTrArg,xsd:string,SPINDayArg1,DayTrArg1),
 	rdf_global_id(xsd:string,StringURI),
-	tr_function_expression(sp:concat,This,[SPINYearArg1-YearTrArg1,'-'^^StringURI,SPINMonthArg1-MonthTrArg1,'-'^^StringURI,SPINDayArg1-DayTrArg1],SPINExpr1,TrArgs1),
+	tr_function_expression(sp:concat,concat,This,[SPINYearArg1-YearTrArg1,'\"-\"'^^StringURI,SPINMonthArg1-MonthTrArg1,'\"-\"'^^StringURI,SPINDayArg1-DayTrArg1],SPINExpr1,TrArgs1),
 	tr_cast_expression(SPINExpr1,TrArgs1,xsd:date,SPINExpr,TrArgs).
 tr_complex_expression(empty,This,[Arg1],SPINExpr,TrArgs) :- !,
 	tr_binary_Math_expression(sp:eq,'=',This,[Arg1,rdf:nil],SPINExpr,TrArgs).
-tr_complex_expression(member,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	translate_argument(Arg2,This,SPINArg2,TrArg2),
+tr_complex_expression(member,This,[Arg1,Arg2],_SPINExpr,TrArgs) :- !,
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	translate_argument(Arg2,This,_SPINArg2,TrArg2),
+	/* removed for SHACL
 	rdf_global_id(sp:'TriplePath',ExprURI1),
 	rdf_create_bnode(SPINExpr),
 	rdf_assert(SPINExpr,rdf:type,ExprURI1),
@@ -564,29 +593,32 @@ tr_complex_expression(member,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
 	rdf_assert(PathExpr1,rdf:type,ExprURI3),
 	rdf_assert(PathExpr1,sp:modMax,-2),
 	rdf_assert(PathExpr1,sp:modMin,0),
-	rdf_assert(PathExpr1,sp:subPath,rdf:rest),
+	rdf_assert(PathExpr1,sp:subPath,rdf:rest),*/
 	atomic_list_concat([TrArg2,'(rdf:rest)*/rdf:first',TrArg1,'.'],' ',TrArgs).
-tr_complex_expression(first,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	translate_argument(Arg2,This,SPINArg2,TrArg2),
+tr_complex_expression(first,This,[Arg1,Arg2],_SPINExpr,TrArgs) :- !,
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	translate_argument(Arg2,This,_SPINArg2,TrArg2),
+	/* removed for SHACL
 	rdf_create_bnode(SPINExpr),
 	rdf_assert(SPINExpr,sp:subject,SPINArg2),
 	rdf_assert(SPINExpr,sp:object,SPINArg1),
-	rdf_assert(SPINExpr,sp:predicate,rdf:first),
+	rdf_assert(SPINExpr,sp:predicate,rdf:first),*/
 	atomic_list_concat([TrArg2,'rdf:first',TrArg1,'.'],' ',TrArgs).
-tr_complex_expression(rest,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	translate_argument(Arg2,This,SPINArg2,TrArg2),
+tr_complex_expression(rest,This,[Arg1,Arg2],_SPINExpr,TrArgs) :- !,
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	translate_argument(Arg2,This,_SPINArg2,TrArg2),
+	/* removed for SHACL
 	rdf_create_bnode(SPINExpr),
 	rdf_assert(SPINExpr,sp:subject,SPINArg2),
 	rdf_assert(SPINExpr,sp:object,SPINArg1),
-	rdf_assert(SPINExpr,sp:predicate,rdf:first),
+	rdf_assert(SPINExpr,sp:predicate,rdf:first),*/
 	atomic_list_concat([TrArg2,'rdf:rest',TrArg1,'.'],' ',TrArgs).
-tr_complex_expression(length,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
+tr_complex_expression(length,This,[Arg1,Arg2],_SPINExpr,TrArgs) :- !,
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
 	translate_argument(Arg2,This,SPINArg2,TrArg2),
 	create_var(e,SPINVar_e,StrVar_e),
-	tr_complex_expression(member,This,[SPINVar_e-StrVar_e,SPINArg2-TrArg2],SPINPathExpr,PathTrArgs),
+	tr_complex_expression(member,This,[SPINVar_e-StrVar_e,SPINArg2-TrArg2],_SPINPathExpr,PathTrArgs),
+	/* removed for SHACL
 	rdf_global_id(sp:'SubQuery',ExprURI1),
 	rdf_create_bnode(SPINExpr),
 	rdf_assert(SPINExpr,rdf:type,ExprURI1),
@@ -607,8 +639,8 @@ tr_complex_expression(length,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
 	rdf_assert(SPINQueryExpr,sp:resultVariables,SPINResultVarsExpr),
 	%% Where expression
 	rdf_assert_list([SPINPathExpr],SPINWhereExpr),
-	rdf_assert(SPINQueryExpr,sp:where,SPINWhereExpr),
-	atomic_list_concat(['{','SELECT','?this',TrArg2,'((COUNT(',StrVar_e,')) AS',TrArg1,')','WHERE','{',PathTrArgs,'}','GROUP BY','?this',TrArg2,'}','.'],' ',TrArgs).
+	rdf_assert(SPINQueryExpr,sp:where,SPINWhereExpr),*/
+	atomic_list_concat(['{','SELECT','$this',TrArg2,'((COUNT(',StrVar_e,')) AS',TrArg1,')','WHERE','{',PathTrArgs,'}','GROUP BY','$this',TrArg2,'}','.'],' ',TrArgs).
 /*
     {
           SELECT ?this ?arg2 ((COUNT(?e)) AS ?arg1)
@@ -619,15 +651,16 @@ tr_complex_expression(length,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
     } .
 */
 
-tr_function_expression(Expression,This,Args,SPINExpr,TrArgs) :-
-	rdf_global_id(Expression,ExprURI),
-	translate_list_of_arguments(Args,This,SPINArgs,',',TrArgs1),
-	term_to_atom(Expression,AtomFunc),
+tr_function_expression(_Expression,SPARQL_function,This,Args,_SPINExpr,TrArgs) :-
+	translate_list_of_arguments(Args,This,_SPINArgs,',',TrArgs1),
+	term_to_atom(SPARQL_function,AtomFunc),
 	atom_concat(AtomFunc,'(',FuncExpr),
-	atomic_list_concat([FuncExpr,TrArgs1,')'],' ',TrArgs),
+	atomic_list_concat([FuncExpr,TrArgs1,')'],' ',TrArgs).
+	/* removed for SHACL
+	rdf_global_id(Expression,ExprURI),
 	rdf_create_bnode(SPINExpr),
 	rdf_assert(SPINExpr,rdf:type,ExprURI),
-	assert_math_expression_arguments(1,SPINExpr,SPINArgs).
+	assert_math_expression_arguments(1,SPINExpr,SPINArgs).*/
 
 /*
 tr_binary_filter_expression(Expression,Operator,This,Arg1,Arg2,SPINAtom,TrExpr) :-
@@ -638,19 +671,21 @@ tr_binary_filter_expression(Expression,Operator,This,Arg1,Arg2,SPINAtom,TrExpr) 
 	rdf_assert(SPINAtom,sp:expression,SPINExpr).
 */
 
-tr_filter_expression(SPINExpr,TrArgs,SPINAtom,TrExpr) :-
-	atomic_list_concat(['FILTER','(',TrArgs,')'],TrExpr),
+tr_filter_expression(_SPINExpr,TrArgs,_SPINAtom,TrExpr) :-
+	atomic_list_concat(['FILTER','(',TrArgs,')'],TrExpr).
+	/* removed for SHACL
 	rdf_create_bnode(SPINAtom),
 	rdf_assert(SPINAtom,rdf:type,sp:'Filter'),
-	rdf_assert(SPINAtom,sp:expression,SPINExpr).
+	rdf_assert(SPINAtom,sp:expression,SPINExpr).*/
 
-tr_bind_expression(Arg1,This,SPINExpr,TrArgs,SPINAtom,TrExpr) :-
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	atomic_list_concat(['BIND','(',TrArgs,'AS',TrArg1,')'],' ',TrExpr),
+tr_bind_expression(Arg1,This,_SPINExpr,TrArgs,_SPINAtom,TrExpr) :-
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	atomic_list_concat(['BIND','(',TrArgs,'AS',TrArg1,')'],' ',TrExpr).
+	/* removed for SHACL
 	rdf_create_bnode(SPINAtom),
 	rdf_assert(SPINAtom,rdf:type,sp:'Bind'),
 	rdf_assert(SPINAtom,sp:variable,SPINArg1),
-	rdf_assert(SPINAtom,sp:expression,SPINExpr).
+	rdf_assert(SPINAtom,sp:expression,SPINExpr).*/
 
 tr_binary_assign_Math_expression(Expression,Operator,This,Arg1,[Arg2,Arg3],SPINAtom,TrExpr) :-
 	tr_binary_Math_expression(Expression,Operator,This,[Arg2,Arg3],SPINExpr,TrArgs),
@@ -664,14 +699,15 @@ tr_unary_assign_math_expression(Expression,Operator,This,Arg1,Arg2,SPINAtom,TrEx
 	tr_unary_Math_expression(Expression,Operator,This,Arg2,SPINExpr,TrArg2),
 	tr_bind_expression(Arg1,This,SPINExpr,TrArg2,SPINAtom,TrExpr).
 
-tr_binary_Math_expression(Expression,Operator,This,[Arg1,Arg2],SPINExpr,TrArgs) :-
+tr_binary_Math_expression(_Expression,Operator,This,[Arg1,Arg2],_SPINExpr,TrArgs) :-
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	translate_argument(Arg2,This,_SPINArg2,TrArg2),
+	atomic_list_concat(['(',TrArg1,Operator,TrArg2,')'],' ',TrArgs).
+	/* removed for SHACL
 	rdf_global_id(Expression,ExprURI),
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	translate_argument(Arg2,This,SPINArg2,TrArg2),
-	atomic_list_concat(['(',TrArg1,Operator,TrArg2,')'],' ',TrArgs),
 	rdf_create_bnode(SPINExpr),
 	rdf_assert(SPINExpr,rdf:type,ExprURI),
-	assert_math_expression_arguments(1,SPINExpr,[SPINArg1,SPINArg2]).
+	assert_math_expression_arguments(1,SPINExpr,[SPINArg1,SPINArg2]).*/
 
 tr_associative_Math_expression(Expression,Operator,This,[Arg1,Arg2],SPINExpr,TrArgs) :- !,
 	tr_binary_Math_expression(Expression,Operator,This,[Arg1,Arg2],SPINExpr,TrArgs).
@@ -679,13 +715,14 @@ tr_associative_Math_expression(Expression,Operator,This,[FirstArg|RestArgs],SPIN
 	tr_associative_Math_expression(Expression,Operator,This,RestArgs,RestSPINExpr,RestTrArgs),
 	tr_binary_Math_expression(Expression,Operator,This,[FirstArg,RestSPINExpr-RestTrArgs],SPINExpr,TrArgs).
 
-tr_unary_Math_expression(Expression,Operator,This,Arg,SPINExpr,TrArg) :-
+tr_unary_Math_expression(_Expression,Operator,This,Arg,_SPINExpr,TrArg) :-
+	translate_argument(Arg,This,_SPINArg,TrArg1),
+	atomic_list_concat([Operator,'(',TrArg1,')'],TrArg).
+	/* removed for SHACL
 	rdf_global_id(Expression,ExprURI),
-	translate_argument(Arg,This,SPINArg,TrArg1),
-	atomic_list_concat([Operator,'(',TrArg1,')'],TrArg),
 	rdf_create_bnode(SPINExpr),
 	rdf_assert(SPINExpr,rdf:type,ExprURI),
-	assert_math_expression_arguments(1,SPINExpr,[SPINArg]).
+	assert_math_expression_arguments(1,SPINExpr,[SPINArg]).*/
 
 tr_multi_binary_Math_expression(sp:mul,'*',_This,_Arg,0,SPINExpr,1) :- !,
 	rdf_canonical_literal(1,SPINExpr).
@@ -699,20 +736,22 @@ tr_multi_binary_Math_expression(sp:mul,'*',This,Arg,N,SPINExpr,TrArgs) :-
 	tr_multi_binary_Math_expression(sp:mul,'*',This,Arg,N1,SPINExpr1,TrArgs1),
 	tr_binary_Math_expression(sp:mul,'*',This,[SPINExpr1-TrArgs1,Arg],SPINExpr,TrArgs).
 
-tr_cast_expression(SPINExpr,TrArgs,Datatype,SPINExpr1,TrArgs1) :-
+tr_cast_expression(_SPINExpr,TrArgs,Datatype,_SPINExpr1,TrArgs1) :-
+	/* removed for SHACL
 	rdf_global_id(spif:cast,ExprURI),
 	rdf_create_bnode(SPINExpr1),
 	rdf_assert(SPINExpr1,rdf:type,ExprURI),
 	rdf_assert(SPINExpr1,sp:arg1,SPINExpr),
 	rdf_global_id(Datatype,DatatypeURI),
-	rdf_assert(SPINExpr1,arg:datatype,DatatypeURI),
+	rdf_assert(SPINExpr1,arg:datatype,DatatypeURI),*/
 	term_to_atom(Datatype,DatatypeAtom),
 	atomic_list_concat(['spif:cast(',TrArgs,',',DatatypeAtom,')'],' ',TrArgs1).
 
-tr_magic_property_expression(spif:split,This,[Arg1,Arg2,Arg3],[SPINExpr1,SPINExpr2,SPINExpr3,SPINExpr4,SPINExpr5],TrArgs) :-
-	translate_argument(Arg1,This,SPINArg1,TrArg1),
-	translate_argument(Arg2,This,SPINArg2,TrArg2),
-	translate_argument(Arg3,This,SPINArg3,TrArg3),
+tr_magic_property_expression(spif:split,This,[Arg1,Arg2,Arg3],[_SPINExpr1,_SPINExpr2,_SPINExpr3,_SPINExpr4,_SPINExpr5],TrArgs) :-
+	translate_argument(Arg1,This,_SPINArg1,TrArg1),
+	translate_argument(Arg2,This,_SPINArg2,TrArg2),
+	translate_argument(Arg3,This,_SPINArg3,TrArg3),
+	/* removed for SHACL
 	rdf_global_id(spif:split,ExprURI),
 	rdf_create_bnode(SPINExpr1),
 	create_var('?0',SPINVar1,_TrArgVar1),
@@ -740,11 +779,12 @@ tr_magic_property_expression(spif:split,This,[Arg1,Arg2,Arg3],[SPINExpr1,SPINExp
 	rdf_assert(SPINExpr5,sp:subject,SPINVar6),
 	rdf_assert(SPINExpr5,sp:predicate,rdf:rest),
 	rdf_assert(SPINExpr5,sp:object,rdf:nil),
-	%rdf_assert_list([SPINExpr1,SPINExpr2,SPINExpr3,SPINExpr4,SPINExpr5],SPINExpr),
+	%rdf_assert_list([SPINExpr1,SPINExpr2,SPINExpr3,SPINExpr4,SPINExpr5],SPINExpr),*/
 	atomic_list_concat([TrArg1,'spif:split','(',TrArg2,TrArg3,')','.'],' ',TrArgs).
 
 
 %assert_math_expression_arguments(1,SPINExpr,SPINArgs).
+/* removed for SHACL
 assert_math_expression_arguments(_,_,[]).
 assert_math_expression_arguments(N,SPINExpr,[SPINArg|RestSPINArgs]) :-
 	atom_concat(arg,N,ArgN),
@@ -753,7 +793,7 @@ assert_math_expression_arguments(N,SPINExpr,[SPINArg|RestSPINArgs]) :-
 	rdf_global_id(SPINArgNPredicate, SPINArgNURI),
 	rdf_assert(SPINExpr,SPINArgNPredicate,SPINArg),
 	N1 is N + 1,
-	assert_math_expression_arguments(N1,SPINExpr,RestSPINArgs).
+	assert_math_expression_arguments(N1,SPINExpr,RestSPINArgs).*/
 
 translate_list_of_arguments(Args,This,SPINArgs,Operator,TrArgs) :-
 	translate_list_of_arguments_aux(Args,This,SPINArgs,ListOfTrArgs),
@@ -774,8 +814,9 @@ translate_argument(Arg,_This,SPINData,Data) :-
 	rdf_lexical_form(Arg,Arg1),
 	Arg1 = DataStr ^^ DataType,
 	SPINData = DataStr ^^ DataType.
-translate_argument(This,This,ThisURI,'?this') :- !,
-	rdf_global_id(spin:'_this', ThisURI).
+translate_argument(This,This,_ThisURI,'$this') :- !.
+	% removed for SHACL
+	% rdf_global_id(spin:'_this', ThisURI).  
 translate_argument(Arg,_This,SPINVar,TrArg) :-
 	rdf(Arg,rdf:type,swrl:'Variable'), !,
 	discover_var_name(Arg,Var),
@@ -794,11 +835,20 @@ discover_var_name(Arg,Var) :-
 	tokenize_atom(Arg,List),
 	last(List,Var).
 
-create_var(Var,SPINVar,TrArgVar) :-
+create_var(Var,_SPINVar,TrArgVar) :-
+	/* removed for SHACL
 	rdf_create_bnode(SPINVar),
 	atom_string(Var,StrVar),
-	rdf_assert(SPINVar,sp:varName,StrVar),
+	rdf_assert(SPINVar,sp:varName,StrVar),*/
 	atom_concat('?',Var,TrArgVar).
+
+% Utility predicate
+% Given a full URI it returns a proper atom for its short URI
+shorten_uri(FullURI,ShortURIAtom) :-
+	rdf_global_id(ShortURITerm,FullURI),
+	term_string(ShortURITerm,ShortURIStr,[quoted(false)]),
+	atom_string(ShortURIAtom,ShortURIStr).
+
 
 delete_swrl_rules([]).
 delete_swrl_rules([R|T]) :-
@@ -888,4 +938,4 @@ remove_duplicates([H|T],[H|T1]) :-
 
 %:- trace, swrl2shacl('univ-with-SWRL.owl').
 
-%stop_here.
+stop_here.

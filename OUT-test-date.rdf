@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#"
+    xmlns:sh="http://www.w3.org/ns/shacl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:ns1="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="file:///SWRL2SPIN/OUT-test-date.rdf">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://datashapes.org/dash"/>
+  </owl:Ontology>
+  <owl:Ontology rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115">
+    <sh:declare>
+      <sh:PrefixDeclaration>
+        <sh:prefix>ns1</sh:prefix>
+        <sh:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#</sh:namespace>
+      </sh:PrefixDeclaration>
+    </sh:declare>
+    <owl:imports rdf:resource="http://spinrdf.org/spif"/>
+    <owl:imports rdf:resource="http://datashapes.org/dash"/>
+  </owl:Ontology>
+  <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthdate">
+    <rdfs:domain>
+      <sh:NodeShape rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person">
+        <sh:rule>
+          <sh:SPARQLRule>
+            <sh:targetClass rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+            <sh:prefixes rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115"/>
+            <sh:construct rdf:datatype="http://www.w3.org/2000/01/rdf-schema#Literal"
+            >CONSTRUCT { $this ns1:birthdate ?b . } WHERE { $this ns1:birthDay ?d . $this ns1:birthMonth ?m . $this ns1:birthYear ?y . BIND ( spif:cast( concat( spif:cast( ?y , xsd:string ) , "-" , spif:cast( ?m , xsd:string ) , "-" , spif:cast( ?d , xsd:string ) ) , xsd:date ) AS ?b ) }</sh:construct>
+          </sh:SPARQLRule>
+        </sh:rule>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </sh:NodeShape>
+    </rdfs:domain>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthYear">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthMonth">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthDay">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+  </owl:DatatypeProperty>
+  <owl:AnnotationProperty rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled"/>
+  <owl:NamedIndividual rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#nick">
+    <ns1:birthYear rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >1969</ns1:birthYear>
+    <ns1:birthMonth rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >5</ns1:birthMonth>
+    <ns1:birthDay rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >9</ns1:birthDay>
+    <rdf:type rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+  </owl:NamedIndividual>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

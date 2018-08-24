@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#"
+     xml:base="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled -->
+
+    <owl:AnnotationProperty rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthDay -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthDay">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthMonth -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthMonth">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthYear -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthYear">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthdate -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthdate">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#nick -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#nick">
+        <rdf:type rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+        <birthDay rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</birthDay>
+        <birthMonth rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</birthMonth>
+        <birthYear rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1969</birthYear>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Rules
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#x">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#d">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#m">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#y">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#b">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">S1</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#Person"/>
+                        <swrl:argument1 rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#x"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthDay"/>
+                                <swrl:argument1 rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#x"/>
+                                <swrl:argument2 rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#d"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthMonth"/>
+                                        <swrl:argument1 rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#x"/>
+                                        <swrl:argument2 rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#m"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthYear"/>
+                                                <swrl:argument1 rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#x"/>
+                                                <swrl:argument2 rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#y"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#date"/>
+                                                        <swrl:arguments rdf:parseType="Collection">
+                                                            <rdf:Description rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#b"/>
+                                                            <rdf:Description rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#y"/>
+                                                            <rdf:Description rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#m"/>
+                                                            <rdf:Description rdf:about="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#d"/>
+                                                        </swrl:arguments>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#birthdate"/>
+                        <swrl:argument1 rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#x"/>
+                        <swrl:argument2 rdf:resource="http://www.semanticweb.org/vasiliadis/ontologies/2018/7/untitled-ontology-115#b"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

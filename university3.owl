@@ -1,354 +1,201 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.owl-ontologies.com/Ontology1514554190.owl#"
-     xml:base="http://www.owl-ontologies.com/Ontology1514554190.owl"
-     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
-     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
-     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:sqwrl="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#"
-     xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#">
-    <owl:Ontology rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl">
-        <owl:imports rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl"/>
-        <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl"/>
-    </owl:Ontology>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Annotation properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://swrl.stanford.edu/ontologies/3.3/swrla.owl#hasRuleGroup -->
-
-    <rdf:Description rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#hasRuleGroup">
-        <rdfs:range rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#Entity"/>
-    </rdf:Description>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Datatypes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.w3.org/2001/XMLSchema#date -->
-
-    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Object Properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#attends -->
-
-    <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#attends">
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Student"/>
-        <rdfs:range rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Course"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#isTaughtBy -->
-
-    <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#isTaughtBy">
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Course"/>
-        <rdfs:range rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdfs:range rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Professor"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#knows -->
-
-    <owl:ObjectProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#knows">
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdfs:range rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Data properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleGroupEnabled -->
-
-    <rdf:Description rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleGroupEnabled">
-        <rdfs:domain rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#Entity"/>
-    </rdf:Description>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#birthday -->
-
-    <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#birthday">
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#diff -->
-
-    <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#diff">
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#firstName -->
-
-    <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#firstName">
-        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#fullName -->
-
-    <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#fullName">
-        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#lastName -->
-
-    <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#lastName">
-        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#name -->
-
-    <owl:DatatypeProperty rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#name">
-        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
-        <rdfs:domain rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Classes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#Course -->
-
-    <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Course"/>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#Person -->
-
-    <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#Professor -->
-
-    <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Professor">
-        <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#Student -->
-
-    <owl:Class rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#Student">
-        <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-    </owl:Class>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Individuals
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#john -->
-
-    <owl:NamedIndividual rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#john">
-        <rdf:type rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdf:type rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Student"/>
-        <attends rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#prolog"/>
-        <knows rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#nbassili"/>
-        <birthday rdf:datatype="http://www.w3.org/2001/XMLSchema#date">1990-08-24</birthday>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#nbassili -->
-
-    <owl:NamedIndividual rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#nbassili">
-        <rdf:type rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-        <rdf:type rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Professor"/>
-        <birthday rdf:datatype="http://www.w3.org/2001/XMLSchema#date">1969-05-09</birthday>
-        <fullName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nick Bassiliades</fullName>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.owl-ontologies.com/Ontology1514554190.owl#prolog -->
-
-    <owl:NamedIndividual rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#prolog">
-        <rdf:type rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Course"/>
-        <isTaughtBy rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#nbassili"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Rules
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    <rdf:Description rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#x">
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
-    </rdf:Description>
-    <rdf:Description rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#fn">
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
-    </rdf:Description>
-    <rdf:Description rdf:about="http://www.owl-ontologies.com/Ontology1514554190.owl#l">
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
-    </rdf:Description>
-    <rdf:Description>
-        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">S1</rdfs:label>
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
-        <swrl:body>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sqwrl="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns="http://www.owl-ontologies.com/Ontology1514554190.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#"
+  xml:base="http://www.owl-ontologies.com/Ontology1514554190.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl"/>
+    <owl:imports rdf:resource="http://sqwrl.stanford.edu/ontologies/built-ins/3.4/sqwrl.owl"/>
+  </owl:Ontology>
+  <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
+  <owl:Class rdf:ID="Course"/>
+  <owl:Class rdf:ID="Professor">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Person"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="ExcellentStudent">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Student"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="NearRetirementProfessor">
+    <rdfs:subClassOf rdf:resource="#Professor"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Student">
+    <rdfs:subClassOf rdf:resource="#Person"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="attends">
+    <rdfs:domain rdf:resource="#Student"/>
+    <rdfs:domain rdf:resource="#Person"/>
+    <rdfs:range rdf:resource="#Course"/>
+  </owl:ObjectProperty>
+  <rdf:Property rdf:about="http://www.w3.org/2002/07/owl#topDataProperty"/>
+  <owl:DatatypeProperty rdf:ID="markAverage">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    <rdfs:domain rdf:resource="#Student"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="lastName">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="#Person"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="age">
+    <rdfs:domain rdf:resource="#Person"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="firstName">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    <rdfs:domain rdf:resource="#Person"/>
+  </owl:DatatypeProperty>
+  <swrl:Imp rdf:ID="Rule-1">
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        <rdf:first>
+          <swrl:ClassAtom>
+            <swrl:classPredicate rdf:resource="#NearRetirementProfessor"/>
+            <swrl:argument1>
+              <swrl:Variable rdf:ID="x"/>
+            </swrl:argument1>
+          </swrl:ClassAtom>
+        </rdf:first>
+      </swrl:AtomList>
+    </swrl:head>
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:ClassAtom>
+            <swrl:classPredicate rdf:resource="#Professor"/>
+            <swrl:argument1 rdf:resource="#x"/>
+          </swrl:ClassAtom>
+        </rdf:first>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:first>
+              <swrl:DatavaluedPropertyAtom>
+                <swrl:argument1 rdf:resource="#x"/>
+                <swrl:propertyPredicate rdf:resource="#age"/>
+                <swrl:argument2>
+                  <swrl:Variable rdf:ID="y"/>
+                </swrl:argument2>
+              </swrl:DatavaluedPropertyAtom>
+            </rdf:first>
+            <rdf:rest>
+              <swrl:AtomList>
                 <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#Person"/>
-                        <swrl:argument1 rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#x"/>
-                    </rdf:Description>
-                </rdf:first>
-                <rdf:rest>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                        <rdf:first>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
-                                <swrl:propertyPredicate rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#fullName"/>
-                                <swrl:argument1 rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#x"/>
-                                <swrl:argument2 rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#fn"/>
-                            </rdf:Description>
-                        </rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThan"/>
+                    <swrl:arguments>
+                      <rdf:List>
                         <rdf:rest>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                                <rdf:first>
-                                    <rdf:Description>
-                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
-                                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#tokenize"/>
-                                        <swrl:arguments>
-                                            <rdf:Description>
-                                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
-                                                <rdf:first rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#l"/>
-                                                <rdf:rest>
-                                                    <rdf:Description>
-                                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
-                                                        <rdf:first rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#fn"/>
-                                                        <rdf:rest>
-                                                            <rdf:Description>
-                                                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
-                                                                <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string">\s</rdf:first>
-                                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                                                            </rdf:Description>
-                                                        </rdf:rest>
-                                                    </rdf:Description>
-                                                </rdf:rest>
-                                            </rdf:Description>
-                                        </swrl:arguments>
-                                    </rdf:Description>
-                                </rdf:first>
-                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-                            </rdf:Description>
+                          <rdf:List>
+                            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                            >63</rdf:first>
+                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                          </rdf:List>
                         </rdf:rest>
-                    </rdf:Description>
-                </rdf:rest>
-            </rdf:Description>
-        </swrl:body>
-        <swrl:head>
-            <rdf:Description>
-                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
-                <rdf:first>
-                    <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
-                        <swrl:propertyPredicate rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#name"/>
-                        <swrl:argument1 rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#x"/>
-                        <swrl:argument2 rdf:resource="http://www.owl-ontologies.com/Ontology1514554190.owl#l"/>
-                    </rdf:Description>
+                        <rdf:first rdf:resource="#y"/>
+                      </rdf:List>
+                    </swrl:arguments>
+                  </swrl:BuiltinAtom>
                 </rdf:first>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-            </rdf:Description>
-        </swrl:head>
-    </rdf:Description>
+              </swrl:AtomList>
+            </rdf:rest>
+          </swrl:AtomList>
+        </rdf:rest>
+      </swrl:AtomList>
+    </swrl:body>
+  </swrl:Imp>
+  <Professor rdf:ID="jack">
+    <age rdf:datatype="http://www.w3.org/2001/XMLSchema#int">65</age>
+  </Professor>
+  <Course rdf:ID="prolog"/>
+  <rdf:Description rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleGroupEnabled">
+    <rdfs:domain rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#hasRuleGroup">
+    <rdfs:range rdf:resource="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#Entity"/>
+  </rdf:Description>
+  <swrl:Imp rdf:ID="Rule-2">
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:first rdf:resource="#y"/>
+                        <rdf:rest>
+                          <rdf:List>
+                            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                            >8.5</rdf:first>
+                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                          </rdf:List>
+                        </rdf:rest>
+                      </rdf:List>
+                    </swrl:arguments>
+                    <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#greaterThanOrEqual"/>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+              </swrl:AtomList>
+            </rdf:rest>
+            <rdf:first>
+              <swrl:DatavaluedPropertyAtom>
+                <swrl:propertyPredicate rdf:resource="#markAverage"/>
+                <swrl:argument1 rdf:resource="#x"/>
+                <swrl:argument2 rdf:resource="#y"/>
+              </swrl:DatavaluedPropertyAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
+        <rdf:first>
+          <swrl:ClassAtom>
+            <swrl:argument1 rdf:resource="#x"/>
+            <swrl:classPredicate rdf:resource="#Student"/>
+          </swrl:ClassAtom>
+        </rdf:first>
+      </swrl:AtomList>
+    </swrl:body>
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:ClassAtom>
+            <swrl:argument1 rdf:resource="#x"/>
+            <swrl:classPredicate rdf:resource="#ExcellentStudent"/>
+          </swrl:ClassAtom>
+        </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      </swrl:AtomList>
+    </swrl:head>
+  </swrl:Imp>
+  <Student rdf:ID="john">
+    <markAverage rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >6.7</markAverage>
+  </Student>
+  <Professor rdf:ID="nbassili">
+    <age rdf:datatype="http://www.w3.org/2001/XMLSchema#int">49</age>
+    <rdf:type rdf:resource="#Person"/>
+  </Professor>
+  <Student rdf:ID="nick">
+    <markAverage rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >8.9</markAverage>
+  </Student>
 </rdf:RDF>
 
-
-
-<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
-
+<!-- Created with Protege (with OWL Plugin 3.5, Build 663)  http://protege.stanford.edu -->
