@@ -1,7 +1,7 @@
 # SWRL2SHACL
 ## A tool for transforming SWRL rule bases in OWL ontologies to object-oriented SHACL-SPARQL rules in SWI-Prolog
 ----------------------------------------------------------------------------------------------------------------
-by Dr. Nick Bassiliades, Associate Professor
+by Dr. Nick Bassiliades, Professor
 Department of Informatics, Aristotle University of Thessaloniki, Greece
 ----------------------------------------------------------------------------------------------------------------
 SWRL is a semantic web rule language that combines OWL ontologies with Horn Logic rules of the RuleML family of rule languages, extending the set of OWL axioms to include Horn-like rules. Being supported by the Protégé ontology editor as well as by popular rule engines and ontology reasoners, such as Jess, Drools and Pellet, SWRL has become a very popular choice for developing rule-based applications on top of ontologies. However, SWRL being around for more than 10 years now, it is most probable that it will never become a W3C standard; therefore, its scope is difficult to reach out to the industrial world.
